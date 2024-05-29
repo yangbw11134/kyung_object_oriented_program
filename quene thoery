@@ -1,0 +1,76 @@
+#include <iostream>
+#include <vector>
+#include <Windows.h>
+#include <ctime>
+#include <fstream>
+using namespace std;
+
+class Quene {
+public:
+	Quene(int ni, int no, int capacity) : Ni(ni), No(no), Capacity(capacity), lost(0) {}
+	
+	vector<int> quene;
+	int Ni, No, Capacity, lost;
+	
+	void add() {
+		int n = rand() % Ni;
+		for (int i = 0; i < n; i++) {
+			if (quene.size() < Capacity) quene.push_back(rand() % 100);
+			else lost++;
+		}
+	}
+
+	void sub() {
+		int m = rand() % No;
+		for (int i = 0; i < m && !quene.empty(); i++)  quene.erase(quene.begin());
+	}
+
+	int qetsize() { return quene.size(); }
+	int getlost() { return lost; }
+
+};
+
+void runQuene(int ni, int no, int capacity, const char* filename) {
+	Quene q(ni, no, capacity);
+	int Packets[120];
+	int elapsedSeconds = 0;
+	int T = 1;
+	int maxPackets = 0;
+	float avgPackets = 0.0;
+	
+	
+	ofstream outfile(filename);
+
+	while (elapsedSeconds < 120) {
+		q.add();
+		q.sub();
+		Packets[elapsedSeconds] = q.qetsize();
+		avgPackets += q.qetsize();
+		if (Packets[elapsedSeconds] > maxPackets)	maxPackets = Packets[elapsedSeconds];
+
+		outfile << elapsedSeconds << "	" << Packets[elapsedSeconds] << "	" << q.getlost() << endl;
+		cout << "Time : " << elapsedSeconds << "s	" << "q.size : " << Packets[elapsedSeconds] << "	Lost packets : " << q.getlost() << endl;
+		Sleep(T * 1000);
+		elapsedSeconds += T;
+	}
+	avgPackets = avgPackets / 120.0;
+	cout << "Simulation with NI=" << ni << ", NO=" << no << ", capacity=" << capacity << endl;
+	cout << "Max packets in queue: " << maxPackets << endl;
+	cout << "Average packets in queue: " << avgPackets << endl;
+	cout << "Lost packets: " << q.getlost() << endl << endl;
+	outfile << maxPackets << "	" << avgPackets << endl;
+
+	outfile.close();
+	
+}
+
+int main() {
+	srand(time(0));
+	int Ni = 15;
+	int capacity = 100;
+
+	runQuene(Ni, 5, capacity, "QueueData_No_5_.txt");
+	runQuene(Ni, 10, capacity, "QueueData_No_10_.txt");
+	runQuene(Ni, 15, capacity, "QueueData_No_15_.txt");
+	runQuene(Ni, 20, capacity, "QueueData_No_20_.txt");
+}
