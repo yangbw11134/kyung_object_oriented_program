@@ -33,25 +33,24 @@ public:
 void runQuene(int ni, int no, int capacity, const char* filename) {
 	Quene q(ni, no, capacity);
 	int Packets[120];
-	int elapsedSeconds = 0;
+	int itime = 0;
 	int T = 1;
 	int maxPackets = 0;
 	float avgPackets = 0.0;
 	
-	
 	ofstream outfile(filename);
 
-	while (elapsedSeconds < 120) {
+	while (itime < 120) {
 		q.add();
 		q.sub();
-		Packets[elapsedSeconds] = q.qetsize();
+		Packets[itime] = q.qetsize();
 		avgPackets += q.qetsize();
-		if (Packets[elapsedSeconds] > maxPackets)	maxPackets = Packets[elapsedSeconds];
+		if (Packets[itime] > maxPackets)	maxPackets = Packets[itime];
 
-		outfile << elapsedSeconds << "	" << Packets[elapsedSeconds] << "	" << q.getlost() << endl;
-		cout << "Time : " << elapsedSeconds << "s	" << "q.size : " << Packets[elapsedSeconds] << "	Lost packets : " << q.getlost() << endl;
+		outfile << itime << "	" << Packets[itime] << "	" << q.getlost() << endl;
+		cout << "Time : " << itime << "s	" << "q.size : " << Packets[itime] << "	Lost packets : " << q.getlost() << endl;
 		Sleep(T * 1000);
-		elapsedSeconds += T;
+		itime += T;
 	}
 	avgPackets = avgPackets / 120.0;
 	cout << "Simulation with NI=" << ni << ", NO=" << no << ", capacity=" << capacity << endl;
@@ -59,7 +58,6 @@ void runQuene(int ni, int no, int capacity, const char* filename) {
 	cout << "Average packets in queue: " << avgPackets << endl;
 	cout << "Lost packets: " << q.getlost() << endl << endl;
 	outfile << maxPackets << "	" << avgPackets << endl;
-
 	outfile.close();
 	
 }
